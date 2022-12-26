@@ -17,6 +17,8 @@ function MapPart(props) {
     setGoogleService,
     setGoogle,
     markerType,
+    mapRef,
+    clickable,markers,setMarkers
   } = props;
 
   return (
@@ -42,6 +44,10 @@ function MapPart(props) {
               setGoogleService = {setGoogleService}
               setGoogle={setGoogle}
               markerType={markerType}
+              mapRef={mapRef}
+              clickable={clickable}
+              markers={markers}
+              setMarkers={setMarkers}
             />
           </div>
           {/* <div className={cs("position-absolute w-100 bottom-0 text-center map-label-part", { dark: darkMode }, { fade_mode: fadeMode })}>

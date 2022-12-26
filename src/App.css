@@ -48,3 +48,12 @@
 .map-label-part .map-tagline{
   font-size: 15px;
 }
+.gmnoprint{
+  display: none;
+}
+.gm-style-cc{
+  display: none;
+}
+a[aria-label="Open this area in Google Maps (opens a new window)"]{
+  display: none !important;
+}

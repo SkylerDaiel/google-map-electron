@@ -2,12 +2,16 @@ import React, { useRef, useState } from "react";
 import {
   Row, Col, FormSelect, FormGroup, FormLabel, Button, Container, Modal, ModalBody, ModalHeader, ModalTitle, Accordion, FormCheck, InputGroup, FormControl
 } from "react-bootstrap";
+import FormCheckLabel from "react-bootstrap/esm/FormCheckLabel";
+import FormCheckInput from "react-bootstrap/esm/FormCheckInput";
 import cs from "classnames";
 import download from "downloadjs";
 import html2canvas from "html2canvas";
 // import "html2canvas-dpi/build/html2canvas";
+import randomstring from 'randomstring';
 
 import googleMapStyles from "./GoogleMapStyle";
+import hideLabelMapStyles from "./GoogleMapHideLabelStyle";
 // import MapImage from "./components/googlemapimage";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -23,6 +27,7 @@ import MarkerImage7 from './assets/icons/marker7.png';
 import MarkerImage8 from './assets/icons/marker8.png';
 import MarkerImage9 from './assets/icons/marker9.png';
 import ScaleModel from "./contents/scalemodel";
+import { useEffect } from "react";
 
 const pageSize = [
   {
@@ -61,63 +66,63 @@ const MarkerType = [
   {
     name: 'marker1',
     icon: MarkerImage1,
-    anchor: [20, 47],
+    anchor: [19, 37],
     scaledSize: [38, 40],
     origin: [0, 0],
   },
   {
     name: 'marker2',
     icon: MarkerImage2,
-    anchor: [20, 47],
+    anchor: [19, 37],
     scaledSize: [38, 40],
     origin: [0, 0],
   },
   {
     name: 'marker3',
     icon: MarkerImage3,
-    anchor: [20, 47],
+    anchor: [19, 37],
     scaledSize: [38, 40],
     origin: [0, 0],
   },
   {
     name: 'marker4',
     icon: MarkerImage4,
-    anchor: [20, 47],
+    anchor: [19, 37],
     scaledSize: [38, 40],
     origin: [0, 0],
   },
   {
     name: 'marker5',
     icon: MarkerImage5,
-    anchor: [15, 47],
+    anchor: [14, 37],
     scaledSize: [28, 40],
     origin: [0, 0],
   },
   {
     name: 'marker6',
     icon: MarkerImage6,
-    anchor: [20, 47],
+    anchor: [19, 37],
     scaledSize: [38, 40],
     origin: [0, 0],
   },
   {
     name: 'marker7',
     icon: MarkerImage7,
-    anchor: [20, 47],
+    anchor: [19, 37],
     scaledSize: [38, 40],
     origin: [0, 0],
   },
   {
     name: 'marker8',
     icon: MarkerImage8,
-    anchor: [20, 47],
+    anchor: [19, 37],
     scaledSize: [38, 40],
     origin: [0, 0],
   },
   {
     name: 'marker9',
     icon: MarkerImage9,
-    anchor: [20, 40],
+    anchor: [19, 37],
     scaledSize: [38, 40],
     origin: [0, 0],
   },
@@ -150,13 +155,29 @@ function App(props) {
   const [google, setGoogle] = useState(null);
   const [scaleModelImage, setScaleModelImage] = useState('');
   const [modalLoading, setModalLoading] = useState(false);
+  //////////////
+  const [showLabel, setShowLabel] = useState(true);
+  const [style, setStyle] = useState(0);
+  /////////////////
+  const [clickable, setClickable] = useState(true);
+  const [markers, setMarkers] = useState([]);
 
   const mapPartRef = useRef(null);
   const mainMapRef = useRef(null);
   const scaleModeRef = useRef(null);
+  const mapRef = useRef(null);
+
+  useEffect(() => {
+    mapPartRef.current.scrollTo({
+      top: (size.maxhei - mapPartRef.current.offsetHeight) / 2,
+      left: (size.maxwid - mapPartRef.current.offsetWidth) / 2,
+      behavior: 'smooth',
+    })
+  }, [size])
 
   // window.onresize
   const ChangePaper = (e) => {
+    setMapLoading(true);
     const item = pageSize.find(item => item.name === e.target.value);
     setSize({
       ...item,
@@ -171,8 +192,20 @@ function App(props) {
   }
 
   const ChangeStyle = (e) => {
+    setStyle(e.target.value);
     setMapLoading(true);
-    setMapStyle(googleMapStyles.mapStyle[e.target.value]);
+    if (showLabel === true)
+      setMapStyle(googleMapStyles.mapStyle[e.target.value]);
+    else
+      setMapStyle(hideLabelMapStyles.mapStyle[e.target.value]);
+  }
+
+  const ChangeShowLabel = (e) => {
+    setShowLabel(!showLabel);
+    if (!showLabel === true)
+      setMapStyle(googleMapStyles.mapStyle[style]);
+    else
+      setMapStyle(hideLabelMapStyles.mapStyle[style]);
   }
 
   const MapZoomChanged = (mapProps, map) => {
@@ -303,6 +336,7 @@ function App(props) {
   }
 
   const SearchLocaiton = () => {
+    setMarkers([]);
     // console.log(locationName);
     const request = {
       // location: mapConfig.center,
@@ -311,6 +345,7 @@ function App(props) {
       query: locationName,
       fields: ['name', 'geometry'],
     }
+    setMapLoading(true);
     googleService.findPlaceFromQuery(request, function (results, status) {
       if (status === google.maps.places.PlacesServiceStatus.OK) {
         // for (var i = 0; i < results.length; i++) {
@@ -324,14 +359,33 @@ function App(props) {
             lng: results[0].geometry.location.lng(),
           }
         });
-        setMapLoading(true);
+        setMarkers([
+          ...markers,
+          {
+            lat: results[0].geometry.location.lat(),
+            lng: results[0].geometry.location.lng(),
+            name: "Position " + randomstring.generate(7),
+            markerType: markerType
+          }
+        ])
+        mapRef.current.map.setCenter({
+          lat: results[0].geometry.location.lat(),
+          lng: results[0].geometry.location.lng(),
+        })
+
         mapPartRef.current.scrollTo({
-          top:(size.maxhei - mapPartRef.current.offsetHeight)/2,
-          left: (size.maxwid - mapPartRef.current.offsetWidth)/2,
+          top: (size.maxhei - mapPartRef.current.offsetHeight) / 2,
+          left: (size.maxwid - mapPartRef.current.offsetWidth) / 2,
           behavior: 'smooth',
         })
+      } else {
+        setMapLoading(false);
       }
     });
+  }
+
+  const ChangeClickable = () => {
+    setClickable(!clickable);
   }
   return (
     <div className="App">
@@ -442,6 +496,7 @@ function App(props) {
                       <FormLabel>Style:</FormLabel>
                       <FormSelect
                         onChange={ChangeStyle}
+                        value={style}
                       >
                         {
                           googleMapStyles.mapStyle.map((item, index) => {
@@ -451,6 +506,16 @@ function App(props) {
                           })
                         }
                       </FormSelect>
+                    </FormGroup>
+
+                    <FormGroup className="mt-3">
+                      <FormCheckLabel className="me-3">Show Label:</FormCheckLabel>
+                      <FormCheckInput type="checkbox" checked={showLabel} onChange={ChangeShowLabel}></FormCheckInput>
+                    </FormGroup>
+
+                    <FormGroup className="mt-3">
+                      <FormCheckLabel className="me-3">Clickable: </FormCheckLabel>
+                      <FormCheckInput type="checkbox" checked={clickable} onChange={ChangeClickable}></FormCheckInput>
                     </FormGroup>
 
                     <FormGroup className="mt-3">
@@ -552,11 +617,15 @@ function App(props) {
               setGoogleService={setGoogleService}
               setGoogle={setGoogle}
               markerType={markerType}
-            // mapTitle={mapTitle}
-            // mapSubtitle={mapSubtitle}
-            // mapTagline={mapTagline}
-            // darkMode={darkMode}
-            // fadeMode={fadeMode}
+              mapRef={mapRef}
+              // mapTitle={mapTitle}
+              // mapSubtitle={mapSubtitle}
+              // mapTagline={mapTagline}
+              // darkMode={darkMode}
+              // fadeMode={fadeMode}
+              clickable={clickable}
+              markers={markers}
+              setMarkers={setMarkers}
             />
           </Col>
         </Row>
