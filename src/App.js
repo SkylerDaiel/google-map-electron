@@ -215,7 +215,13 @@ function App(props) {
       // center: map.center,
       center: { lat: map.center.lat(), lng: map.center.lng() },
     })
-    // console.log(map.center.lat(), map.center.lng());
+  }
+
+  const zoomChanged = (e) => {
+    setMapConfig({
+      ...mapConfig,
+      zoom: Number(e.target.value)
+    })
   }
 
   const MapCenterChanged = (mapProps, map) => {
@@ -336,7 +342,6 @@ function App(props) {
   }
 
   const SearchLocaiton = () => {
-    setMarkers([]);
     // console.log(locationName);
     const request = {
       // location: mapConfig.center,
@@ -359,15 +364,17 @@ function App(props) {
             lng: results[0].geometry.location.lng(),
           }
         });
-        setMarkers([
-          ...markers,
-          {
-            lat: results[0].geometry.location.lat(),
-            lng: results[0].geometry.location.lng(),
-            name: "Position " + randomstring.generate(7),
-            markerType: markerType
-          }
-        ])
+        setTimeout(() => {
+          setMarkers([
+            // ...markers,
+            {
+              lat: results[0].geometry.location.lat(),
+              lng: results[0].geometry.location.lng(),
+              name: "Position " + randomstring.generate(7),
+              markerType: markerType
+            }
+          ])
+        }, 150);
         mapRef.current.map.setCenter({
           lat: results[0].geometry.location.lat(),
           lng: results[0].geometry.location.lng(),
@@ -487,7 +494,17 @@ function App(props) {
                     <FormGroup className="mt-3">
                       <FormLabel>Search Locaiton:</FormLabel>
                       <InputGroup className="">
-                        <FormControl value={locationName} onChange={(e) => setLocationName(e.target.value)}></FormControl>
+                        <FormControl
+                          value={locationName}
+                          onChange={(e) => setLocationName(e.target.value)}
+                          onKeyDown={e => {
+                            if (e.keyCode === 13){
+                              SearchLocaiton()
+                            }
+                          }
+                          }
+                        >
+                        </FormControl>
                         <Button onClick={SearchLocaiton}>Search</Button>
                       </InputGroup>
                     </FormGroup>
@@ -618,6 +635,7 @@ function App(props) {
               setGoogle={setGoogle}
               markerType={markerType}
               mapRef={mapRef}
+              zoomChanged={zoomChanged}
               // mapTitle={mapTitle}
               // mapSubtitle={mapSubtitle}
               // mapTagline={mapTagline}

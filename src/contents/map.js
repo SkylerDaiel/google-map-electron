@@ -3,6 +3,7 @@ import React from "react";
 import cs from "classnames";
 
 import MapComponent from "../components/googl_map";
+import MapZoom from "../components/map_zoom";
 
 function MapPart(props) {
   const {
@@ -18,11 +19,12 @@ function MapPart(props) {
     setGoogle,
     markerType,
     mapRef,
-    clickable,markers,setMarkers
+    clickable,markers,setMarkers,
+    zoomChanged
   } = props;
 
   return (
-    <div className="position-relative w-100">
+    <div className="position-relative w-100 map">
       <div className="map-part" ref={mapPartRef}>
         <div className={cs("position-relative bg-transparent", { "circleMode": maskType === 'circle' })}
           style={{
@@ -59,6 +61,9 @@ function MapPart(props) {
           </div> */}
         </div>
       </div>
+      
+      <MapZoom className = "position-absolute start-50 translate-middle w-50 zoom-position p-3 rounded-3 zoom-range" zoom = {mapConfig.zoom} zoomChanged={zoomChanged}/>
+      
       <div className="position-absolute top-50 map-height translate-middle">
         <span>{size.hei} / {size.maxhei}Pixel</span>
       </div>

@@ -57,3 +57,21 @@
 a[aria-label="Open this area in Google Maps (opens a new window)"]{
   display: none !important;
 }
+
+.zoom-position{
+  bottom: 3rem;
+}
+.zoom-range{
+  /* display: none; */
+  visibility: hidden;
+  background-color: rgba(38, 38, 38, 0.286);
+  opacity: 0;
+  transition: visibility 0s 0.5s, opacity 0.5s linear;
+}
+
+.map:hover .zoom-range{
+  /* display: block; */
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.5s linear;
+}

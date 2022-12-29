@@ -43,7 +43,7 @@ function MapContainer(props) {
     let newMarkers = markers;
     newMarkers.splice(index, 1)
     setMarkers([...newMarkers]);
-  }, [markers,setMarkers])
+  }, [markers, setMarkers])
 
 
   useEffect(() => {
@@ -100,42 +100,42 @@ function MapContainer(props) {
         </Marker>
       )
     })
-  }, [markers,props,onClickMarker])
+  }, [markers, props, onClickMarker])
 
-const MainMap = useMemo(() =>
-  <Map
-    ref={mapRef}
-    id="mapDom"
-    keyboardShortcuts={false}
-    google={props.google}
-    zoomControl={false}
-    scaleControl={false}
-    streetViewControl={false}
-    fullscreenControl={false}
-    mapTypeControl={false}
-    zoom={props._mapConfig.zoom}
-    // style={MapContainer.mapStyle}
-    containerStyle={containerStyle}
-    // initialCenter={props._mapConfig.center}
-    onReady={mapLoaded}
-    onZoomChanged={props._mapZoomChanged}
-    // onCenterChanged={props._mapCenterChanged}
-    onTilesloaded={setMapLoading(false)}
-    onClick={mapClicked}
-    centerAroundCurrentLocation={true}
-  // center={mapCenter}
-  >
-    {
-      Markers
-    }
-  </Map >
-  , [mapRef, containerStyle, setMapLoading, mapLoaded, mapClicked, props, Markers])
+  const MainMap = useMemo(() =>
+    <Map
+      ref={mapRef}
+      id="mapDom"
+      keyboardShortcuts={false}
+      google={props.google}
+      zoomControl={false}
+      scaleControl={false}
+      streetViewControl={false}
+      fullscreenControl={false}
+      mapTypeControl={false}
+      zoom={props._mapConfig.zoom}
+      // style={MapContainer.mapStyle}
+      containerStyle={containerStyle}
+      // initialCenter={props._mapConfig.center}
+      onReady={mapLoaded}
+      onZoomChanged={props._mapZoomChanged}
+      // onCenterChanged={props._mapCenterChanged}
+      onTilesloaded={setMapLoading(false)}
+      onClick={mapClicked}
+      centerAroundCurrentLocation={true}
+    // center={mapCenter}
+    >
+      {
+        Markers
+      }
+    </Map >
+    , [mapRef, containerStyle, setMapLoading, mapLoaded, mapClicked, props, Markers])
 
-return (
-  <>
-    {MainMap}
-  </>
-)
+  return (
+    <>
+      {MainMap}
+    </>
+  )
   // return mapRender;
 }
 
